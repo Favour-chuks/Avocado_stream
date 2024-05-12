@@ -1,4 +1,4 @@
-import {Register, Login} from '../component/login';
+import {Register, Login} from '../component/appAuthentication';
 function Loginpages() {
   return (
    <>

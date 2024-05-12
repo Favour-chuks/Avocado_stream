@@ -1,15 +1,17 @@
 interface menuProps {
   notification: string | number;
   children: string | JSX.Element | JSX.Element[];
+  display: string
 }
-export default function SideBar({ children, notification }: menuProps) {
+export default function SideBar({ children, notification, display }: menuProps) {
+
   return (
     <>
       <div className="flex flex-row">
-        <div className="relative flex h-[100vh] max-w-[15rem] flex-col hover:outline hover:outline-1 hover:outline-lime-300  rounded-xl bg-white bg-clip-border p-4 text-gray-700 shadow-xl shadow-blue-gray-900/5">
+        <div className={`relative ${display} flex h-[100vh]  flex-col hover:outline hover:outline-1 hover:outline-lime-300  rounded-xl bg-white bg-clip-border p-4 text-gray-700 shadow-xl shadow-blue-gray-900/5`}>
           <div className="flex flex-column gap-1 p-4 mb-2 ">
             <img src="./avocado-16.svg" alt="avocado stream" />
-            <h2  className="font-semibold text-lime-500">Avocado Stream</h2>
+            <h2 className="font-semibold text-lime-500">Avocado Stream</h2>
           </div>
           <nav className="flex min-w-[200px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
             <div
@@ -40,7 +42,7 @@ export default function SideBar({ children, notification }: menuProps) {
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g
                     id="SVGRepo_tracerCarrier"
                     strokeLinecap="round"
@@ -134,9 +136,8 @@ export default function SideBar({ children, notification }: menuProps) {
           </nav>
         </div>
 
-        <div className="py-8 h-100vh grow px-12">{children}</div>
+        <div className="py-8 grow h-100vh grow px-12">{children}</div>
       </div>
     </>
   );
 }
-

@@ -1,9 +1,10 @@
-import { Dashboard } from "./dashboard";
-import SideBar from "../component/sidebar";
-import { Login } from "../component/login";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// import Profile from './profile';
+import { Route, Routes } from "react-router-dom";
+import Profile from "./profile";
+import Settings from "./setting";
+import { Dashboard } from "./dashboard";
+import SideBar from "../component/sidebar";
 const firebaseConfig = {
   apiKey: "AIzaSyBj-hGQjPY1OTM67nMPUdXcxTUaHq7lDtg",
   authDomain: "test-project-56bea.firebaseapp.com",
@@ -17,19 +18,22 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-export default function Main() {
+function Main() {
   return (
     <>
-      {" "}
-      {auth.currentUser != null
-        ? (console.log("a user has been found"),
-          (
-            <SideBar notification={4}>
-              {/* <Profile/> */}
-              <Dashboard />
-            </SideBar>
-          ))
-        : (console.log("user has not been found"), (<Login />))}
+        <SideBar notification={"1"} display="">
+          <Routes>
+            <Route path={`/${auth.currentUser?.uid}`} element={<Dashboard />} />
+            <Route
+              path={`/${auth.currentUser?.uid}/profile`}
+              element={<Profile />}
+            />
+            <Route path={`/${auth.currentUser?.uid}/settings`} element={<Settings />} />
+            <Route path="/" element={<Dashboard />} />
+          </Routes>
+        </SideBar>
     </>
   );
 }
+
+export default Main;

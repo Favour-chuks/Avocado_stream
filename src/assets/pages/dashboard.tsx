@@ -1,19 +1,17 @@
+// import VideoFeed from "../component/videoFeed";
+
 export function Dashboard() {
   return (
     <>
       <div className="flex flex-row gap-4 h-[70vh] ">
         <div className="flex ">
-          <video src="" className="bg-lime-100  rounded-xl grow"></video>
+          {/* <VideoFeed/> */}
+          
         </div>
         <div className="flex flex-col grow place-items-center gap-4 h-[100%] w-[40%]">
-          <video src="" className="bg-lime-100 grow rounded-xl">
-            hello
-          </video>
-
-          <video src="" className="bg-lime-100 grow rounded-xl">
-            mr morale
-          </video>
-
+          
+        {/* <VideoFeed />
+        <VideoFeed /> */}
           <button
             role="submit"
             className=" bg-lime-300 py-1.5 w-[100%] rounded-md">

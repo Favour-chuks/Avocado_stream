@@ -4,9 +4,12 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,50 +30,40 @@ const auth = getAuth(app);
 let provider;
 let email;
 let password;
-const handleGoogleSignIn = () => {
-  provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      console.log("sign in successful");
-      const user = result.user;
-      console.log(user.email);
-    })
-    .catch((err) => {
-      console.error(err.messsage);
-    });
-};
 
 export function Login() {
-  const [emailInput, setEmailInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailInput(event.target.value);
+  const navigate = useNavigate();
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+  });
+  const handleInputChange = (e: any) => {
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const handlePasswordInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordInput(event.target.value);
-  };
-  const handleEmailLogin = () => {
-    password = passwordInput;
-    email = emailInput;
+  const handleEmailLogin = async () => {
+    password = await inputs.password;
+    email = await inputs.email;
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential: any) => {
-        const user = userCredential.user;
-        console.log(user.email);
-        console.log(user.uid);
+      .then(() => {
+        navigate(`/${auth.currentUser?.uid}`);
       })
-      // .then(getUser(uid))
-      // .then((userRecord: any) => {
-      //   // See the UserRecord reference doc for the contents of userRecord.
-      //   console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
-      // })
+
       .catch((error: any) => {
-        console.log(error.message);
+        console.error(error.message);
       });
   };
 
-  const handleRegisterRouting = () => {
-    console.log(" now you need to register an account");
+  const handleGoogleSignIn = () => {
+    provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(() => {
+        navigate(`/${auth.currentUser?.uid}`);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -162,10 +155,7 @@ export function Login() {
               </label>
               <div className="mt-2">
                 <input
-                  value={emailInput}
-                  onChange={(e) => {
-                    handleEmailChange(e);
-                  }}
+                  onChange={handleInputChange}
                   id="email"
                   name="email"
                   type="email"
@@ -193,10 +183,7 @@ export function Login() {
               </div>
               <div className="mt-2">
                 <input
-                  value={passwordInput}
-                  onChange={(e) => {
-                    handlePasswordInput(e);
-                  }}
+                  onChange={handleInputChange}
                   id="password"
                   name="password"
                   type="password"
@@ -217,18 +204,11 @@ export function Login() {
           </div>
 
           {/* divider section */}
-          <div className="h-5 my-5 border-b-2 border-grey text-lg text-center">
-            <span className=" text-center font-semibold text-gray-600 bg-white px-5">
-              or
+          <div className="my-4 text-sm">
+            <span >
+              Don't have an account? <Link to="/register" className="underline font-semibold text-gray-700 hover:text-lime-500"> Create Account </Link>
             </span>
           </div>
-
-          <button
-            onClick={handleRegisterRouting}
-            type="submit"
-            className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-grey-300 shadow-sm hover:bg-grey-500 hover:outline hover:outline-1 hover:outline-lime-500  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Create Account
-          </button>
         </div>
       </div>
     </>
@@ -236,10 +216,45 @@ export function Login() {
 }
 
 export function Register() {
-  const handleLoginRouting = () => {};
+  const navigate = useNavigate();
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+  });
+  const handleInputChange = (e: any) => {
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const handleEmailRegistration = async () => {
+    password = await inputs.password;
+    email = await inputs.email;
+    const passwordConfirmation = await inputs.passwordConfirmation;
+    if (passwordConfirmation === password) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          navigate("/user");
+        })
+        .catch((error: any) => {
+          console.error(error.message);
+        });
+    } else {
+      alert("your password is wrong");
+    }
+  };
+
+  const handleGoogleRegistration = () => {
+    provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(() => {
+        navigate(`/${auth.currentUser?.uid}`);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-4 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Register an account
@@ -248,10 +263,11 @@ export function Register() {
 
         <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
           {/* signin buttons */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-cols">
             <button
+              onClick={handleGoogleRegistration}
               type="submit"
-              className="flex justify-center rounded-md bg-grey-950 px-3 py-2 shadow-sm hover:outline hover:outline-1 hover:outline-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
+              className="flex gap-2 grow justify-center rounded-md outline  outline-1 outline-gray-300 bg-grey-950 px-3 py-2 shadow-sm hover:outline hover:outline-1 hover:outline-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
               <svg
                 width="20px"
                 height="20px"
@@ -312,97 +328,13 @@ export function Register() {
                   </g>{" "}
                 </g>
               </svg>
-            </button>
-            <button
-              type="submit"
-              className="flex justify-center rounded-md bg-grey-950 px-3 py-2 shadow-sm hover:outline hover:outline-1 hover:outline-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-              <svg
-                width="20px"
-                height="20x"
-                viewBox="0 0 16 16"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none">
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    fill="#1877F2"
-                    d="M15 8a7 7 0 00-7-7 7 7 0 00-1.094 13.915v-4.892H5.13V8h1.777V6.458c0-1.754 1.045-2.724 2.644-2.724.766 0 1.567.137 1.567.137v1.723h-.883c-.87 0-1.14.54-1.14 1.093V8h1.941l-.31 2.023H9.094v4.892A7.001 7.001 0 0015 8z"></path>
-                  <path
-                    fill="#ffffff"
-                    d="M10.725 10.023L11.035 8H9.094V6.687c0-.553.27-1.093 1.14-1.093h.883V3.87s-.801-.137-1.567-.137c-1.6 0-2.644.97-2.644 2.724V8H5.13v2.023h1.777v4.892a7.037 7.037 0 002.188 0v-4.892h1.63z"></path>
-                </g>
-              </svg>
-            </button>
-            <button
-              type="submit"
-              className="flex justify-center rounded-md bg-grey-950 px-3 py-2 shadow-sm hover:outline hover:outline-1 hover:outline-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-              <svg
-                width="20px"
-                height="20px"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  {" "}
-                  <rect
-                    x="17"
-                    y="17"
-                    width="10"
-                    height="10"
-                    fill="#FEBA08"></rect>{" "}
-                  <rect
-                    x="5"
-                    y="17"
-                    width="10"
-                    height="10"
-                    fill="#05A6F0"></rect>{" "}
-                  <rect
-                    x="17"
-                    y="5"
-                    width="10"
-                    height="10"
-                    fill="#80BC06"></rect>{" "}
-                  <rect
-                    x="5"
-                    y="5"
-                    width="10"
-                    height="10"
-                    fill="#F25325"></rect>{" "}
-                </g>
-              </svg>
+              <span>Register with Google</span>
             </button>
           </div>
           <p className="text-sm my-4">Or register with an email</p>
 
           {/* registration form */}
-          <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="userName"
-                className="block text-sm font-medium leading-6 text-gray-900">
-                User Name
-              </label>
-              <div className="mt-2">
-                <input
-                  id="userName"
-                  name="userName"
-                  type="text"
-                  autoComplete="text"
-                  required
-                  className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-inset focus:px-2 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
+          <form action="" className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -411,10 +343,10 @@ export function Register() {
               </label>
               <div className="mt-2">
                 <input
+                  onChange={handleInputChange}
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
                   required
                   className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-inset focus:px-2 sm:text-sm sm:leading-6"
                 />
@@ -431,10 +363,10 @@ export function Register() {
               </div>
               <div className="mt-2">
                 <input
+                  onChange={handleInputChange}
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
                   required
                   className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:px-2 focus:ring-inset sm:text-sm sm:leading-6"
                 />
@@ -444,17 +376,17 @@ export function Register() {
             <div>
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="confirmPassword"
+                  htmlFor="passwordConfirmation"
                   className="block text-sm font-medium leading-6 text-gray-900">
                   Confirm Password
                 </label>
               </div>
               <div className="mt-2">
                 <input
-                  id="password"
-                  name="confirmPassword"
+                  onChange={handleInputChange}
+                  id="passwordConfirmation"
+                  name="passwordConfirmation"
                   type="password"
-                  autoComplete="current-password"
                   required
                   className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:px-2 focus:ring-inset sm:text-sm sm:leading-6"
                 />
@@ -462,27 +394,43 @@ export function Register() {
             </div>
 
             <div>
+              <div className="flex gap-2">
+                <input
+                  id="privacyPolicy"
+                  name="privacyPolicy"
+                  type="radio"
+                  required
+                />
+                <div className="flex flex-cols items-center justify-between">
+                  <label
+                    htmlFor="privacyPolicy"
+                    className="block text-sm font-medium leading-6 text-gray-900">
+                    I have read and accept the{" "}
+                    <Link
+                      to="/privacyPolicy"
+                      className="text-lime-400 underline font-bold hover:text-lime-500">
+                      Terms & Conditions
+                    </Link>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div>
               <button
+                onClick={handleEmailRegistration}
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-lime-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500">
                 Register Account
               </button>
             </div>
-          </div>
+          </form>
 
-          {/* divider section */}
-          <div className="h-5 my-5 border-b-2 border-grey text-lg text-center">
-            <span className=" text-center font-semibold text-gray-600 bg-white px-5">
-              or
+          {/* login redirect */}
+          <div className="my-4 text-sm">
+            <span >
+              Already have an account? <Link to="/login" className="underline font-bold text-gray-700 hover:text-lime-500"> Login </Link>
             </span>
           </div>
-
-          <button
-            onClick={handleLoginRouting}
-            type="submit"
-            className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-grey-300 shadow-sm hover:bg-grey-500 hover:outline hover:outline-1 hover:outline-lime-500  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Sign in
-          </button>
         </div>
       </div>
     </>
