@@ -1,11 +1,11 @@
-// import VideoFeed from "../component/videoFeed";
+import VideoFeed from "../component/videoFeed";
 
 export function Dashboard() {
   return (
     <>
       <div className="flex flex-row gap-4 h-[70vh] ">
         <div className="flex ">
-          {/* <VideoFeed/> */}
+          <VideoFeed/>
           
         </div>
         <div className="flex flex-col grow place-items-center gap-4 h-[100%] w-[40%]">

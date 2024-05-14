@@ -1,9 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Login, Register } from "./assets/component/appAuthentication";
-import Main from "./assets/pages/main";
+import Main from "./assets/pages/mainPages";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
+import TermsandCondition from "./assets/pages/legaldocumentation";
 const firebaseConfig = {
   apiKey: "AIzaSyBj-hGQjPY1OTM67nMPUdXcxTUaHq7lDtg",
   authDomain: "test-project-56bea.firebaseapp.com",
@@ -26,11 +27,11 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/privacyPolicyy" element={<Login />} />
+          <Route path="/Terms&Conditions" element={<TermsandCondition />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path={`/${userId}`} element={<Main />} />
-          <Route
+          {/* <Route
             path="/"
             element={
               auth.currentUser != null ? (
@@ -39,7 +40,8 @@ function App() {
                 <Navigate to="/login" />
               )
             }
-          />
+          /> */}
+          <Route path="/" element={<Main/>} />
         </Routes>
       </BrowserRouter>
     </>

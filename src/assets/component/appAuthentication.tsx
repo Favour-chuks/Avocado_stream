@@ -334,7 +334,7 @@ export function Register() {
           <p className="text-sm my-4">Or register with an email</p>
 
           {/* registration form */}
-          <form action="" className="space-y-6">
+          <form action="" className="space-y-6"> 
             <div>
               <label
                 htmlFor="email"
@@ -407,7 +407,7 @@ export function Register() {
                     className="block text-sm font-medium leading-6 text-gray-900">
                     I have read and accept the{" "}
                     <Link
-                      to="/privacyPolicy"
+                      to="/Terms&Conditions"
                       className="text-lime-400 underline font-bold hover:text-lime-500">
                       Terms & Conditions
                     </Link>
